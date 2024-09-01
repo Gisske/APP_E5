@@ -5,7 +5,7 @@
         <!-- app-bar -->
         <v-app-bar color="teal-darken-4" image="https://picsum.photos/1920/1080?random">
           <template v-slot:image>
-            <v-img gradient="to top right, rgba(74,20,140,.8), rgba(49,27,146,.8)"></v-img>
+            <v-img gradient="to top right, rgba(50, 149, 255, 0.8), rgba(0, 190, 255, 0.8)"></v-img>
           </template>          
 
           <template v-slot:prepend>
@@ -120,19 +120,19 @@ export default {
 <style scoped>
 /* สีสำหรับแถบด้านบน */
 .v-app-bar {
-  background-color: #4A148C; /* สีม่วงเข้ม */
+  background-color: #2965c0; /* สีม่วงเข้ม */
   color: #FFFFFF; /* สีขาว */
 }
 
 /* สีสำหรับ Navigation Drawer */
 .v-navigation-drawer {
-  background-color: #311B92; /* สีม่วงเข้มขึ้น */
+  background-color: #2965c0; /* สีม่วงเข้มขึ้น */
   color: #FFFFFF; /* สีขาว */
 }
 
 /* สีสำหรับ Bottom Navigation */
 .v-bottom-navigation {
-  background-color: #1A237E; /* สีน้ำเงินเข้ม */
+  background-color: #4790ff; /* สีน้ำเงินเข้ม */
   color: #FFFFFF; /* สีขาว */
 }
 
@@ -148,17 +148,17 @@ export default {
 
 /* สีของปุ่ม */
 .v-btn {
-  background-color: #673AB7 !important; /* สีม่วงปานกลาง */
+  background-color: #2965c0 !important; /* สีม่วงปานกลาง */
   color: #FFFFFF !important; /* สีขาว */
 }
 
 .v-btn--text {
-  color: #4A148C !important; /* สีม่วงสำหรับปุ่มที่เป็นข้อความ */
+  color: #2965c0 !important; /* สีม่วงสำหรับปุ่มที่เป็นข้อความ */
 }
 
 /* สีสำหรับ System Bar */
 .v-system-bar {
-  background-color: #512DA8 !important; /* สีม่วงเข้ม */
+  background-color: #2965c0 !important; /* สีม่วงเข้ม */
   color: #FFFFFF !important; /* สีขาว */
 }
 

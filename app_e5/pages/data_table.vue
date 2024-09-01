@@ -10,13 +10,15 @@
         <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
 
-        <!-- ช่องค้นหา -->
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="ค้นหา"
-          class="search-field"
-        ></v-text-field>
+        <div class="search">
+          <!-- ช่องค้นหา -->
+          <v-text-field
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="ค้นหา"
+            class="search-field"
+          ></v-text-field>
+        </div>
 
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ props }">
@@ -64,15 +66,16 @@
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" md="4" sm="6">
-                    <v-text-field
-                      v-model="editedItem.picture"
-                      label="picture"
-                    ></v-text-field>
+                    <v-file-input
+                      label="Upload Picture"
+                      accept="image/*"
+                      prepend-icon="mdi-camera"
+                      @change="handleFileUpload"
+                    ></v-file-input>
                   </v-col>
                 </v-row>
               </v-container>
             </v-card-text>
-
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn class="cancel-btn" variant="text" @click="close">
@@ -117,7 +120,6 @@
   </v-data-table>
 </template>
 
-
 <script>
 import axios from "axios";
 
@@ -143,7 +145,7 @@ export default {
       password: '',
       email: '',
       status: '',
-      picture: '',
+      picture: '', // This will store the file name or base64 encoded image
     },
     defaultItem: {
       id: '',
@@ -215,39 +217,39 @@ export default {
     },
 
     async save() {
-      if (this.editedIndex > -1) {
-        try {
-          const response = await axios.post("http://localhost:7000/update", this.editedItem);
-          const data = response.data;
-          console.log(data);
-          if (data.ok) {
-            Object.assign(this.desserts[this.editedIndex], this.editedItem);
-            alert('Item updated successfully');
-          } else {
-            alert(data.error);
-          }
-        } catch (error) {
-          console.error('Error updating item:', error);
-          alert(error.message || 'An error occurred while updating the item');
-        }
+  if (this.editedIndex > -1) {
+    try {
+      const response = await axios.post("http://localhost:7000/update", this.editedItem);
+      const data = response.data;
+      console.log(data);
+      if (data.ok) {
+        Object.assign(this.desserts[this.editedIndex], this.editedItem);
+        alert('Item updated successfully');
       } else {
-        try {
-          const response = await axios.post("http://localhost:7000/insert", this.editedItem);
-          const data = response.data;
-          console.log(data);
-          if (data.ok) {
-            this.desserts.push(this.editedItem);
-            alert('Item added successfully');
-          } else {
-            alert(data.error);
-          }
-        } catch (error) {
-          console.error('Error adding item:', error);
-          alert(error.message || 'An error occurred while adding the item');
-        }
+        alert(data.error); // Show the error message returned from the server
       }
-      this.close();
-    },
+    } catch (error) {
+      console.error('Error updating item:', error);
+      alert(error.message || 'An error occurred while updating the item');
+    }
+  } else {
+    try {
+      const response = await axios.post("http://localhost:7000/insert", this.editedItem);
+      const data = response.data;
+      console.log(data);
+      if (data.ok) {
+        this.desserts.push(this.editedItem);
+        alert('Item added successfully');
+      } else {
+        alert(data.error); // Show the error message returned from the server
+      }
+    } catch (error) {
+      console.error('Error adding item:', error);
+      alert(error.message || 'An error occurred while adding the item');
+    }
+  }
+  this.close();
+},
 
     async deleteItem(item) {
       if (confirm('Are you sure you want to delete this item?')) {
@@ -277,27 +279,72 @@ export default {
         alert('Failed to refresh data');
       }
     },
+
+    handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.editedItem.picture = e.target.result; // เก็บภาพในรูปแบบ Base64
+    };
+    reader.readAsDataURL(file);
+  }
+}
+,
   },
 };
 </script>
 
-
 <style scoped>
+.v-img {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px;
+}
+
+.search-field{
+  padding-left: 20px;
+  margin-right: 60px;
+}
+
 .search-field {
-  padding-top: 20px;
+  padding-bottom: 56px;
+  height: 20px;
   width: 300px;
+  transition: 0.2s;
 }
+
+.v-btn {
+  background-color: #2965c0;
+  color: white;
+}
+
 .my-custom-edit-icon {
-  color: #4caf50;
+  color: #2965c0; /* สีเขียวสำหรับปุ่มแก้ไข */
 }
+
 .my-custom-delete-icon {
-  color: #f44336;
+  color: #f44336; /* สีแดงสำหรับปุ่มลบ */
 }
+
 .cancel-btn {
-  color: #f44336;
+  background-color: #f44336; /* สีแดงสำหรับปุ่มยกเลิก */
+  color: white;
 }
+
 .save-btn {
-  color: #4caf50;
+  background-color: #2965c0; /* สีเขียวสำหรับปุ่มบันทึก */
+  color: white;
+}
+
+.primary {
+  background-color: #2965c0;
+  color: white;
+}
+
+.my-custom-image {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px;
 }
 </style>
-

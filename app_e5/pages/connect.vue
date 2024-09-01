@@ -50,7 +50,7 @@
               <v-icon color="primary">mdi-phone</v-icon>
               <span class="mr-4">+123 456 789</span>
               <v-icon color="primary">mdi-email</v-icon>
-              <span>contact@example.com</span>
+              <span>66309010026@ccollege.ac.th</span>
             </v-card-actions>
           </v-card>
         </v-col>

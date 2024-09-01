@@ -2,9 +2,9 @@
   <v-container fluid class="pa-5" style="background-color: #f5f5f5;">
     <v-row justify="center">
       <v-col cols="12" md="8">
-        <v-card class="elevation-3" max-width="800px">
+        <v-card class="elevation-3" max-width="2000px">
           <v-img
-            src="https://wallpaperaccess.com/full/5802524.png"
+            src="https://scontent.fbkk12-2.fna.fbcdn.net/v/t39.30808-6/320341915_466369662323610_1294700008110803652_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=86c6b0&_nc_ohc=n3Wtr_h4Ql0Q7kNvgEW5YKI&_nc_ht=scontent.fbkk12-2.fna&oh=00_AYDbCQ9_qdoxpLwNSuH5h36csnaJiYhJnQhTBZ0OF9SuRg&oe=66DA5E40"
             alt="About Us Image"
             height="300px"
             class="elevation-1"

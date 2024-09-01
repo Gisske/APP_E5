@@ -15,7 +15,7 @@ const knex = require("knex")({
     port: 3306,
     user: "root",
     password: "",
-    database: "methee",
+    database: "member1",
   },
 });
 
@@ -139,6 +139,38 @@ app.get("/user", async (req, res) => {
     res.status(500).send({ message: "Internal server error" });
   }
 });
+
+// Update user endpoint
+app.post("/update", async (req, res) => {
+    console.log("Data to update:", req.body);
+    const { id, username, password, email, status, picture } = req.body;
+  
+    if (!id) {
+      return res.status(400).send({ ok: 0, error: "ID is required" });
+    }
+  
+    try {
+      const result = await knex("users")
+        .where({ id: id })
+        .update({
+          username: username,
+          password: password,
+          email: email,
+          status: status,
+          picture: picture
+        });
+  
+      if (result) {
+        res.send({ ok: 1 });
+      } else {
+        res.status(404).send({ ok: 0, error: "User not found" });
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).send({ ok: 0, error: error.message });
+    }
+  });
+  
 
 // Delete a user
 app.post("/delete", async (req, res) => {

@@ -7,7 +7,7 @@
     >
       <v-img
         class="mx-auto mb-8"
-        max-width="150"
+        max-width="100"
         src="\public\assets\images\css3-logo-png-transparent.png"
       ></v-img>
 
@@ -114,6 +114,11 @@ export default {
 </script>
 
 <style scoped>
+.v-img {
+  box-shadow: 0px 0px 20px 10px #4790ff;
+  border-radius: 50%;
+}
+
 /* ปรับสีพื้นหลังและบัตร */
 .v-card {
   background-color: #ffffff;
@@ -130,7 +135,7 @@ export default {
 
 /* ปรับสีพื้นหลังปุ่มและข้อความ */
 .v-btn {
-  background-color: #6200ea; /* สีม่วง */
+  background-color: #2965c0; /* สีม่วง */
   color: #ffffff; /* ขาว */
   font-weight: bold;
   transition: background-color 0.3s, transform 0.2s;
@@ -138,7 +143,8 @@ export default {
 
 /* เปลี่ยนสีปุ่มเมื่อโฮเวอร์ */
 .v-btn:hover {
-  background-color: #3700b3; /* สีม่วงเข้ม */
+  background-color: #4790ff; /* สีม่วงเข้ม */
+  box-shadow:0px 0px 10px 5px #4790ff;
   transform: scale(1.02); /* ขยายปุ่มเล็กน้อยเมื่อโฮเวอร์ */
 }
 
@@ -146,7 +152,7 @@ export default {
 .text-h5 {
   font-weight: bold;
   font-size: 24px;
-  color: #6200ea; /* สีม่วง */
+  color: #2965c0; /* สีม่วง */
 }
 
 /* ปรับสีของลิงก์ */
