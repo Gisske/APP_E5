@@ -7,7 +7,7 @@
     >
       <v-img
         class="mx-auto mb-8"
-        max-width="100"
+        max-width="150"
         src="\public\assets\images\css3-logo-png-transparent.png"
       ></v-img>
 
@@ -50,11 +50,11 @@
         <span>Don't have an account?</span>
         <a
           class="text-blue text-decoration-none"
-          href="#"
           rel="noopener noreferrer"
           target="_blank"
+          @click="goToRegister"
         >
-          Sign up now
+          Register
         </a>
       </v-card-text>
     </v-card>
@@ -109,16 +109,14 @@ export default {
         console.error("Login error:", error);
       }
     },
-  },
+    goToRegister() {
+      this.$router.push('/reg');
+    },
+  }
 };
 </script>
 
 <style scoped>
-.v-img {
-  box-shadow: 0px 0px 20px 10px #4790ff;
-  border-radius: 50%;
-}
-
 /* ปรับสีพื้นหลังและบัตร */
 .v-card {
   background-color: #ffffff;
