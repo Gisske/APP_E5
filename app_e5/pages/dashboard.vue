@@ -1,85 +1,582 @@
 <template>
-  <v-container fluid class="pa-4" style="background-color: #f5f5f5;">
-    <v-row justify="center" class="mb-5">
-      <v-col class="box_container" ols="12" md="8" lg="6">
-        <v-card class="pa-5 elevation-12 rounded-xl" color="#ffffff">
-          <div class="Program">         
-                <h4 class="TEXT">Program MQTTX</h4>
-          </div>
-          <v-row class="mb-4">
-            <v-col cols="12" class="text-center">
-              <v-btn
-                class="ma-2 rounded-pill"
-                color="primary"
-                large
-              >
-                {{ status || 'Not Connected' }}
-                <v-icon class="ml-2" icon="mdi-checkbox-marked-circle"></v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
+  <v-container class="background-container">
+    <v-container class="header-container">
+      <v-btn
+        class="ma-1 custom-btn"
+        :color="mqtt"
+        @click="toggleMqttConnection"
+      >
+        {{ status }}
+        
+      </v-btn>
+    </v-container>
 
-          <v-row class="mb-4">
-            <v-col cols="12" md="6" class="text-center">
-              <h4 class="font-weight-bold mb-3">SW 1</h4>
-              <v-row align="center" justify="center">
-                <v-col class="d-flex align-center justify-center" cols="auto">
-                  <v-btn class="btn-on mx-1" size="small" @click="on1">ON</v-btn>
-                </v-col>
-                <v-col class="d-flex align-center" cols="auto">
-                  <v-progress-circular :model-value="value1" :rotate="360" :size="100" :width="15" color="#4a148c">
-                    <template v-slot:default> {{ value1 }} % </template>
-                  </v-progress-circular>
-                </v-col>
-                <v-col class="d-flex align-center justify-center" cols="auto">
-                  <v-btn class="btn-off mx-1" size="small" @click="off1">OFF</v-btn>
-                </v-col>
-              </v-row>
-            </v-col>
-            <v-col cols="12" md="6" class="text-center">
-              <h4 class="font-weight-bold mb-3">SW 2</h4>
-              <v-row align="center" justify="center">
-                <v-col class="d-flex align-center justify-center" cols="auto">
-                  <v-btn class="btn-on1 mx-1" size="small" @click="on2">ON</v-btn>
-                </v-col>
-                <v-col class="d-flex align-center" cols="auto">
-                  <v-progress-circular :model-value="value2" :rotate="360" :size="100" :width="15" color="red">
-                    <template v-slot:default> {{ value2 }} % </template>
-                  </v-progress-circular>
-                </v-col>
-                <v-col class="d-flex align-center justify-center" cols="auto">
-                  <v-btn class="btn-off1 mx-1" size="small" @click="off2">OFF</v-btn>
-                </v-col>
-              </v-row>
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-col>
-    </v-row>
+    <h1 class="title-text">ช่วงวัย : {{ state }}</h1>
+
+    <v-container>
+      <v-card class="flex-card" elevation="3">
+        <div class="btn-container">
+          <div class="my-2">
+            <v-btn
+              class="light-btn"
+              :color="colorLight1"
+              @click="toggleLight1"
+            >
+              
+              &nbsp; {{ light1 }}
+            </v-btn>
+          </div>
+          <div class="my-2">
+            <v-btn
+              class="light-btn"
+              :color="colorLight2"
+              @click="toggleLight2"
+            >
+              
+              &nbsp; {{ light2 }}
+            </v-btn>
+          </div>
+          <div class="my-2">
+            <v-btn
+              class="light-btn"
+              :color="colorLight3"
+              @click="toggleLight3"
+            >
+              
+              &nbsp; {{ light3 }}
+            </v-btn>
+          </div>
+        </div>
+
+        <div class="status-container">
+          <div class="progress-container">
+            <h3 class="progress-title">อุณหภูมิ</h3>
+            <v-progress-circular
+              :model-value="showTemp"
+              :rotate="360"
+              :size="120"
+              :width="14"
+              :color="tempColor"
+              class="progress-circle"
+            >
+              <template v-slot:default> {{ showTemp }} °C </template>
+            </v-progress-circular>
+            <p class="center-text">อุณหภูมิที่เหมาะสม: <b>{{ goodTemp }}</b></p>
+          </div>
+
+          <div class="progress-container">
+            <h3 class="progress-title">ความชื้น</h3>
+            <v-progress-circular
+              :model-value="showHumi"
+              :rotate="360"
+              :size="120"
+              :width="14"
+              :color="humiColor"
+              class="progress-circle"
+            >
+              <template v-slot:default> {{ showHumi }} % </template>
+            </v-progress-circular>
+            <p class="center-text">ความชื้นที่เหมาะสม: <b>{{ goodHumi }}</b></p>
+          </div>
+        </div>
+      </v-card>
+    </v-container>
+
+    <v-container>
+      <v-card class="status-card" elevation="3">
+        <p>สถานะอุณหภูมิ : <b>{{ status1 }}</b></p>
+        <p>สถานะความชื้น : <b>{{ status2 }}</b></p>
+      </v-card>
+    </v-container>
   </v-container>
 </template>
 
+<style scoped>
+.background-container {
+  background-color: #d7d7d7;
+  min-height: 100vh;
+  padding: 30px;
+}
+
+.header-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.title-text {
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  color: #4a4a4a;
+  margin: 20px 0;
+}
+
+.flex-card {
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+}
+
+.btn-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.light-btn {
+  font-size: 16px;
+  font-weight: bold;
+  min-width: 120px;
+}
+
+.progress-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+}
+
+.progress-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #616161;
+}
+
+.center-text {
+  text-align: center;
+  font-size: 14px;
+  color: #616161;
+}
+
+.status-container {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 30px;
+}
+
+.status-card {
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+  color: #424242;
+  text-align: center;
+}
+
+.custom-btn {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  .btn-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .status-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .progress-container {
+    margin: 15px 0;
+  }
+}
+</style>
 
 
 <script>
 import mqtt from "mqtt";
+import axios from "axios";
+
 export default {
   data() {
     return {
-      id: 1,
-      msg: "",
-      status: "",
-      value1: 0,
-      value2: 0,
-      client: null,
+      id: 10,
+      status: "OFFLINE",
+      showTemp: "0",
+      showHumi: "0",
+      mqtt: "#8F8F8F",
+      icon: "mdi-close-circle-outline",
+      colorLight1: "red",
+      colorLight2: "red",
+      colorLight3: "red",
+      light1: "สถานะการทำงาน",
+      light2: "มอเตอร์พ่นหมอก",
+      light3: "ระบบฮีทเตอร์",
+      status1: "รอแสดงผล",
+      status2: "รอแสดงผล",
+      state: "รอแสดงผล",
+      iconLight1: "mdi-lightbulb-off-outline",
+      iconLight2: "mdi-lightbulb-off-outline",
+      iconLight3: "mdi-lightbulb-off-outline",
+      lineNotifyToken: "FUjligDJrKv3tramPU4EaXf2aH39bRLxwH6dE4Gm0pY",
     };
   },
 
+  watch: {
+    showTemp(newTemp) {
+      let newStatus1 = this.status1;
+
+      if (this.state === 1) {
+        if (newTemp > 28) {
+          newStatus1 = "สูงเกินไป";
+          if (this.status1 !== newStatus1) {
+            this.sendLineNotify("แจ้งเตือน: อุณหภูมิสูงเกินไป! อุณหภูมิขณะนี้คือ " + newTemp + " °C");
+            const payload = JSON.stringify({ "Light3": "0" });
+            this.client.publish("phanu/Light3", payload);
+            const payload2 = JSON.stringify({ "Light2": "1" });
+            this.client.publish("phanu/Light2", payload2);
+          }
+        } else if (newTemp < 27) {
+          newStatus1 = "ต่ำเกินไป";
+          if (this.status1 !== newStatus1) {
+            this.sendLineNotify("แจ้งเตือน: อุณหภูมิต่ำเกินไป! อุณหภูมิขณะนี้คือ " + newTemp + " °C");
+            const payload = JSON.stringify({ "Light3": "1" });
+            this.client.publish("phanu/Light3", payload);
+            const payload2 = JSON.stringify({ "Light2": "0" });
+            this.client.publish("phanu/Light2", payload2);
+          }
+        } else {
+          newStatus1 = "ปกติ";
+          const payload = JSON.stringify({ "Light3": "0" });
+          this.client.publish("phanu/Light3", payload);
+          const payload2 = JSON.stringify({ "Light2": "0" });
+          this.client.publish("phanu/Light2", payload2);
+        }
+        this.status1 = newStatus1;
+      } else if (this.state === 2) {
+        if (newTemp > 27) {
+          newStatus1 = "สูงเกินไป";
+          if (this.status1 !== newStatus1) {
+            this.sendLineNotify("แจ้งเตือน: อุณหภูมิสูงเกินไป! อุณหภูมิขณะนี้คือ " + newTemp + " °C");
+            const payload = JSON.stringify({ "Light3": "0" });
+            this.client.publish("phanu/Light3", payload);
+            const payload2 = JSON.stringify({ "Light2": "1" });
+            this.client.publish("phanu/Light2", payload2);
+          }
+        } else if (newTemp < 26) {
+          newStatus1 = "ต่ำเกินไป";
+          if (this.status1 !== newStatus1) {
+            this.sendLineNotify("แจ้งเตือน: อุณหภูมิต่ำเกินไป! อุณหภูมิขณะนี้คือ " + newTemp + " °C");
+            const payload = JSON.stringify({ "Light3": "1" });
+            this.client.publish("phanu/Light3", payload);
+            const payload2 = JSON.stringify({ "Light2": "0" });
+            this.client.publish("phanu/Light2", payload2);
+          }
+        } else {
+          newStatus1 = "ปกติ";
+          const payload = JSON.stringify({ "Light3": "0" });
+          this.client.publish("phanu/Light3", payload);
+          const payload2 = JSON.stringify({ "Light2": "0" });
+          this.client.publish("phanu/Light2", payload2);
+        }
+        this.status1 = newStatus1;
+      } else if (this.state === 3) {
+        if (newTemp > 26) {
+          newStatus1 = "สูงเกินไป";
+          if (this.status1 !== newStatus1) {
+            this.sendLineNotify("แจ้งเตือน: อุณหภูมิสูงเกินไป! อุณหภูมิขณะนี้คือ " + newTemp + " °C");
+            const payload = JSON.stringify({ "Light3": "0" });
+            this.client.publish("phanu/Light3", payload);
+            const payload2 = JSON.stringify({ "Light2": "1" });
+            this.client.publish("phanu/Light2", payload2);
+          }
+        } else if (newTemp < 25) {
+          newStatus1 = "ต่ำเกินไป";
+          if (this.status1 !== newStatus1) {
+            this.sendLineNotify("แจ้งเตือน: อุณหภูมิต่ำเกินไป! อุณหภูมิขณะนี้คือ " + newTemp + " °C");
+            const payload = JSON.stringify({ "Light3": "1" });
+            this.client.publish("phanu/Light3", payload);
+            const payload2 = JSON.stringify({ "Light2": "0" });
+            this.client.publish("phanu/Light2", payload2);
+          }
+        } else {
+          newStatus1 = "ปกติ";
+          const payload = JSON.stringify({ "Light3": "0" });
+          this.client.publish("phanu/Light3", payload);
+          const payload2 = JSON.stringify({ "Light2": "0" });
+          this.client.publish("phanu/Light2", payload2);
+        }
+        this.status1 = newStatus1;
+      } else if (this.state === 4) {
+        if (newTemp > 25) {
+          newStatus1 = "สูงเกินไป";
+          if (this.status1 !== newStatus1) {
+            this.sendLineNotify("แจ้งเตือน: อุณหภูมิสูงเกินไป! อุณหภูมิขณะนี้คือ " + newTemp + " °C");
+            const payload = JSON.stringify({ "Light3": "0" });
+            this.client.publish("phanu/Light3", payload);
+            const payload2 = JSON.stringify({ "Light2": "1" });
+            this.client.publish("phanu/Light2", payload2);
+          }
+        } else if (newTemp < 24) {
+          newStatus1 = "ต่ำเกินไป";
+          if (this.status1 !== newStatus1) {
+            this.sendLineNotify("แจ้งเตือน: อุณหภูมิต่ำเกินไป! อุณหภูมิขณะนี้คือ " + newTemp + " °C");
+            const payload = JSON.stringify({ "Light3": "1" });
+            this.client.publish("phanu/Light3", payload);
+            const payload2 = JSON.stringify({ "Light2": "0" });
+            this.client.publish("phanu/Light2", payload2);
+          }
+        } else {
+          newStatus1 = "ปกติ";
+          const payload = JSON.stringify({ "Light3": "0" });
+          this.client.publish("phanu/Light3", payload);
+          const payload2 = JSON.stringify({ "Light2": "0" });
+          this.client.publish("phanu/Light2", payload2);
+        }
+        this.status1 = newStatus1;
+      } else if (this.state === 5) {
+        if (newTemp > 25) {
+          newStatus1 = "สูงเกินไป";
+          if (this.status1 !== newStatus1) {
+            this.sendLineNotify("แจ้งเตือน: อุณหภูมิสูงเกินไป! อุณหภูมิขณะนี้คือ " + newTemp + " °C");
+            const payload = JSON.stringify({ "Light3": "0" });
+            this.client.publish("phanu/Light3", payload);
+            const payload2 = JSON.stringify({ "Light2": "1" });
+            this.client.publish("phanu/Light2", payload2);
+          }
+        } else if (newTemp < 24) {
+          newStatus1 = "ต่ำเกินไป";
+          if (this.status1 !== newStatus1) {
+            this.sendLineNotify("แจ้งเตือน: อุณหภูมิต่ำเกินไป! อุณหภูมิขณะนี้คือ " + newTemp + " °C");
+            const payload = JSON.stringify({ "Light3": "1" });
+            this.client.publish("phanu/Light3", payload);
+            const payload2 = JSON.stringify({ "Light2": "0" });
+            this.client.publish("phanu/Light2", payload2);
+          }
+        } else {
+          newStatus1 = "ปกติ";
+          const payload = JSON.stringify({ "Light3": "0" });
+          this.client.publish("phanu/Light3", payload);
+          const payload2 = JSON.stringify({ "Light2": "0" });
+          this.client.publish("phanu/Light2", payload2);
+        }
+        this.status1 = newStatus1;
+      } else {
+        this.status1 = newStatus1;
+      } 
+    },
+
+    showHumi(newHumi) {
+      let newStatus2 = this.status2;
+
+      if (this.state === 1) {
+        if (newHumi >= 91) {
+          newStatus2 = "สูงเกินไป";
+          if (this.status2 !== newStatus2) {
+            this.sendLineNotify("แจ้งเตือน: ความชื้นสูงเกินไป! ความชื้นขณะนี้คือ " + newHumi + " %");
+          } 
+        } else if (newHumi < 90) {
+            newStatus2 = "ต่ำเกินไป";
+            this.sendLineNotify("แจ้งเตือน: ความชื้นต่ำเกินไป! ความชื้นขณะนี้คือ " + newHumi + " %");
+        } else if (newHumi >= 90) {
+          newStatus2 = "ปกติ";
+        } 
+        else {
+          newStatus2 = "เกินข้อผิดพลาด";
+        }
+        this.status2 = newStatus2;
+      } else if (this.state === 2) {
+        if (newHumi > 90) {
+          newStatus2 = "สูงเกินไป";
+          if (this.status2 !== newStatus2) {
+            this.sendLineNotify("แจ้งเตือน: ความชื้นสูงเกินไป! ความชื้นขณะนี้คือ " + newHumi + " %");
+          }
+        } else if (newHumi < 85) {
+          newStatus2 = "ต่ำเกินไป";
+          if (this.status2 !== newStatus2) {
+            this.sendLineNotify("แจ้งเตือน: ความชื้นต่ำเกินไป! ความชื้นขณะนี้คือ " + newHumi + " %");
+          }
+        } else if (newHumi >= 85 && newHumi <= 90) {
+          newStatus2 = "ปกติ";
+        }  else {
+          newStatus2 = "Error";
+        }
+        this.status2 = newStatus2;
+      } else if (this.state === 3) {
+        if (newHumi > 85) {
+          newStatus2 = "สูงเกินไป";
+          if (this.status2 !== newStatus2) {
+            this.sendLineNotify("แจ้งเตือน: ความชื้นสูงเกินไป! ความชื้นขณะนี้คือ " + newHumi + " %");
+          }
+        } else if (newHumi < 80) {
+          newStatus2 = "ต่ำเกินไป";
+          if (this.status2 !== newStatus2) {
+            this.sendLineNotify("แจ้งเตือน: ความชื้นต่ำเกินไป! ความชื้นขณะนี้คือ " + newHumi + " %");
+          }
+        } else if (newHumi <= 85 && newHumi >= 80) {
+          newStatus2 = "ปกติ";
+        }  else {
+          newStatus2 = "Error";
+        }
+        this.status2 = newStatus2;
+      } else if (this.state === 4) {
+        if (newHumi > 76) {
+          newStatus2 = "สูงเกินไป";
+          if (this.status2 !== newStatus2) {
+            this.sendLineNotify("แจ้งเตือน: ความชื้นสูงเกินไป! ความชื้นขณะนี้คือ " + newHumi + " %");
+          }
+        } else if (newHumi < 75) {
+          newStatus2 = "ต่ำเกินไป";
+          if (this.status2 !== newStatus2) {
+            this.sendLineNotify("แจ้งเตือน: ความชื้นต่ำเกินไป! ความชื้นขณะนี้คือ " + newHumi + " %");
+          }
+        } else {
+          newStatus2 = "ปกติ";
+        }
+        this.status2 = newStatus2;
+      } else if (this.state === 5) {
+        if (newHumi >= 71) {
+          newStatus2 = "สูงเกินไป";
+          if (this.status2 !== newStatus2) {
+            this.sendLineNotify("แจ้งเตือน: ความชื้นสูงเกินไป! ความชื้นขณะนี้คือ " + newHumi + " %");
+          }
+        } else if (newHumi < 70) {
+          newStatus2 = "ต่ำเกินไป";
+          if (this.status2 !== newStatus2) {
+            this.sendLineNotify("แจ้งเตือน: ความชื้นต่ำเกินไป! ความชื้นขณะนี้คือ " + newHumi + " %");
+          }
+        } else {
+          newStatus2 = "ปกติ";
+        }
+        this.status2 = newStatus2;
+      }
+    },
+  },
+
+  computed: {
+
+    goodTemp() {
+      if (this.state === 1) {
+        return "27 - 28 °C";
+      } else if (this.state === 2) {
+        return "26 - 27 °C";
+      } else if (this.state === 3) {
+        return "25 - 26 °C";
+      } else if (this.state === 4) {
+        return "24 - 25 °C";
+      } else if (this.state === 5) {
+        return "24 - 25 °C";
+      } else {
+        return "-";
+      }
+    },
+
+    goodHumi() {
+      if (this.state === 1) {
+        return "90 %";
+      } else if (this.state === 2) {
+        return "85 - 90 %";
+      } else if (this.state === 3) {
+        return "80 - 85 %";
+      } else if (this.state === 4) {
+        return "75 %";
+      } else if (this.state === 5) {
+        return "70 %";
+      } else {
+        return "-";
+      }
+    },
+
+    tempColor() {
+      if (this.state === 1) {
+        if (this.showTemp > 28) {
+          return "red";
+        } else if (this.showTemp < 27) {
+          return "red";
+        } else if (this.showTemp >= 27 && this.showTemp <= 28) {
+          return "green";
+        } else {
+          return "red";
+        }
+      } else if (this.state === 2) {
+        if (this.showTemp > 27) {
+          return "red";
+        } else if (this.showTemp >= 26 && this.showTemp <= 27) {
+          return "green";
+        } else {
+          return "red";
+        }
+      } else if (this.state === 3) {
+        if (this.showTemp > 26) {
+          return "red";
+        } else if (this.showTemp >= 25 && this.showTemp <= 26) {
+          return "green";
+        } else {
+          return "red";
+        }
+      } else if (this.state === 4) {
+        if (this.showTemp > 25) {
+          return "red";
+        } else if (this.showTemp >= 24 && this.showTemp <= 25) {
+          return "green";
+        } else {
+          return "red";
+        }
+      } else if (this.state === 5) {
+        if (this.showTemp > 25) {
+          return "red";
+        } else if (this.showTemp >= 24 && this.showTemp <= 25) {
+          return "green";
+        } else {
+          return "red";
+        }
+      }
+    },
+
+    humiColor() {
+      if (this.state === 1) {
+        if (this.showHumi >= 91) {
+          return "red";
+        } else if (this.showHumi < 90) {
+          return "red";
+        } else {
+          return "green";
+        }
+      } else if (this.state === 2) {
+        if (this.showHumi > 90) {
+          return "red";
+        } else if (this.showHumi <= 90 && this.showHumi >= 85) {
+          return "green";
+        } else if (this.showHumi < 85) {
+          return "red";
+        }
+      } else if (this.state === 3) {
+        if (this.showHumi > 85) {
+          return "red";
+        } else if (this.showHumi >= 80 && this.showHumi <= 85) {
+          return "green";
+        } else if (this.showHumi < 80) {
+          return "red";
+        }
+      } else if (this.state === 4) {
+        if (this.showHumi >= 76) {
+          return "red";
+        } else if (this.showHumi < 75) {
+          return "red";
+        } else {
+          return "green";
+        }
+      } else if (this.state === 5) {
+        if (this.showHumi >= 71) {
+          return "red";
+        } else if (this.showHumi < 70) {
+          return "red";
+        } else {
+          return "green";
+        }
+      }
+    },
+  },
+
   created() {
-    this.client = mqtt.connect("ws://broker.emqx.io:8083/mqtt");
-    this.client.on("connect", this.onMqttConnect);
-    this.client.on("message", this.onMqttMessage);
-    this.client.on("reconnect", this.handleOnReConnect);
+    // this.client = mqtt.connect("ws://broker.emqx.io:8083/mqtt");
+    this.client = mqtt.connect("ws://broker.hivemq.com:8000/mqtt");
+    this.client.on("connect", this.onMqttConnect.bind(this));
+    this.client.on("message", this.onMqttMessage.bind(this));
+    this.client.on("reconnect", this.handleOnReConnect.bind(this));
   },
 
   beforeDestroy() {
@@ -87,193 +584,166 @@ export default {
   },
 
   methods: {
-    on1() {
-      this.value1 = 69;
-      this.client.publish("room/sw01", String("ON"));
+    onMqttConnect(topic, messege) {
+      this.client.subscribe("init_revert")
+      const payload = JSON.stringify(1);
+      this.client.publish("init_revert", payload);
+
+    },
+    
+    disconnectMqtt() {
+      console.log("disconnected");
+      this.client.end();
     },
 
-    on2() {
-      this.value2 = 56;
-      this.client.publish("room/sw02", String("ON"));
-    },
-
-    off1() {
-      this.value1 = 0;
-      this.client.publish("room/sw01", String("OFF"))
-    },
-
-    off2() {
-      this.value2 = 0;
-      this.client.publish("room/sw02", String("OFF"));
-      
-    },
-
-    onMqttConnect() {
-      this.status = "Mqtt connected";
-      this.client.publish("op", "status");
-      this.client.subscribe("status");
-      this.client.subscribe("room/sw01");
+    toggleMqttConnection() {
+      if (this.status === "Connected") {
+        this.status = "OFFLINE";
+        this.mqtt = "#8F8F8F";
+        this.icon = "mdi-close-circle-outline";
+        this.colorLight1 = "#8F8F8F";
+        this.iconLight1 = "mdi-lightbulb-off-outline";
+        this.colorLight2 = "#8F8F8F";
+        this.iconLight2 = "mdi-lightbulb-off-outline";
+        this.colorLight3 = "#8F8F8F";
+        this.iconLight3 = "mdi-lightbulb-off-outline";
+        this.showTemp = "0";
+        this.showHumi = "0";
+        this.state = "ระบบปิดอยู่";
+        this.status1 = "ระบบปิดอยู่";
+        this.status2 = "ระบบปิดอยู่";
+        // const payload = JSON.stringify({ "init": "0" });
+        const payload = JSON.stringify(0);
+        this.client.publish("init_revert", payload);
+        } 
+        else if (this.status === "OFFLINE") {
+          this.status = "Connected";
+          this.mqtt = "blue";
+          this.client.subscribe("init_revert")
+          // const payload = JSON.stringify({ "init": "1" });
+          const payload = JSON.stringify(1);
+          this.client.publish("init_revert", payload);
+        }
     },
 
     onMqttMessage(topic, message) {
-      if (topic === "status") {
-        this.msg = message.toString();
+      if (topic === "init_revert") {
+        const payload = JSON.parse(message.toString());
+
+        // if (payload.init === "1") {
+        if (payload === 1) {
+          this.status = "Connected";
+          this.mqtt = "blue";
+          this.icon = "mdi-checkbox-marked-circle";
+          this.colorLight1 = "#51EE5B";
+          this.iconLight1 = "mdi-lightbulb-on-outline";
+          this.client.subscribe("ctc/temp");
+          this.client.subscribe("phanu/Light2");
+          this.client.subscribe("phanu/Light3");
+          this.client.subscribe("node/datatotal");
+        } 
+        else if (payload === 0) {
+          this.colorLight1 = "#8F8F8F";
+          this.iconLight1 = "mdi-lightbulb-off-outline";
+          this.client.unsubscribe("ctc/temp");
+          this.client.unsubscribe("phanu/Light2");
+          this.client.unsubscribe("phanu/Light3");
+          this.client.unsubscribe("node/datatotal");
+          this.status = "OFFLINE";
+          this.mqtt = "#8F8F8F";
+          this.icon = "mdi-close-circle-outline";
+          this.colorLight1 = "red";
+          this.iconLight1 = "mdi-lightbulb-off-outline";
+          this.colorLight2 = "red";
+          this.iconLight2 = "mdi-lightbulb-off-outline";
+          this.colorLight3 = "red";
+          this.iconLight3 = "mdi-lightbulb-off-outline";
+          this.showTemp = "0";
+          this.showHumi = "0";
+          this.state = "ระบบปิดอยู่";
+          this.status1 = "ระบบปิดอยู่";
+          this.status2 = "ระบบปิดอยู่";
+        }
       }
-      if (topic === "room/sw01") {
-        this.value = parseInt(message.toString(), 10);
+
+      if (topic === "phanu/Light2") {
+        const payload = JSON.parse(message.toString());
+
+        if (payload.Light2 === "1") {
+          this.colorLight2 = "#51EE5B";
+          this.iconLight2 = "mdi-lightbulb-on-outline";
+        } else {
+          this.colorLight2 = "#red";
+          this.iconLight2 = "mdi-lightbulb-off-outline";
+        }
       }
-      if (topic === "room/sw02") {
-        this.value = parseInt(message.toString(), 10);
+
+      if (topic === "phanu/Light3") {
+        const payload = JSON.parse(message.toString());
+
+        if (payload.Light3 === "1") {
+          this.colorLight3 = "#51EE5B";
+          this.iconLight3 = "mdi-lightbulb-on-outline";
+        } else {
+          this.colorLight3 = "#red";
+          this.iconLight3 = "mdi-lightbulb-off-outline";
+        }
+      }
+
+      if (topic === "ctc/temp") {
+        try {
+          const payload = JSON.parse(message.toString());
+          // this.showTemp = parseFloat(payload.temp).toFixed(2);
+          // this.showHumi = parseFloat(payload.humi).toFixed(2);
+          this.state = parseFloat(payload.state);
+        } catch (error) {
+          console.error("Failed to parse JSON message:", error);
+        }
+      }
+
+      if (topic === "node/datatotal") {
+        try {
+          const payload = JSON.parse(message.toString());
+          this.showTemp = parseFloat(payload.temp).toFixed(2);
+          this.showHumi = parseFloat(payload.humi).toFixed(2);
+          // this.state = parseFloat(payload.state);
+        } catch (error) {
+          console.error("Failed to parse JSON message:", error);
+        }
       }
     },
 
+    sendLineNotify(message) {
+      axios.post('http://localhost:3001/send-line-notify', 
+        new URLSearchParams({ message }), 
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Authorization": `Bearer ${this.lineNotifyToken}`
+          }
+        })
+        .then(response => {
+          console.log("Line Notify sent successfully:", response.data);
+        })
+        .catch(error => {
+          console.error("Failed to send Line Notify:", error);
+        });
+    },
+
     handleOnReConnect() {
-      this.status = "Mqtt Reconnecting...";
+      this.retryTimes += 1;
       if (this.retryTimes > 5) {
-        this.client.end();
-        this.status = "Mqtt Disconnected";
+        try {
+          this.client.end();
+          this.initData();
+          this.$message.error("Connection maxReconnectTimes limit, stop retry");
+        } catch (error) {
+          this.$message.error(error.toString());
+          console.log("Connection failed", error);
+          this.status = "Offline";
+        }
       }
     },
   },
 };
 </script>
-
-<style scoped>
-/* Global Styles */
-body {
-  background-color: #202020; /* Light grey background for the whole page */
-}
-
-.box_container {
-  transition: 0.2s;
-}
-
-.box_container:hover {
-  background-color: #2965c0;
-  border-radius: 30px;
-  box-shadow: 0px 0px 10px 5px #6c9ee9;
-}
-
-.Program {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.TEXT {
-  background-color: #2965c0;
-  padding: 15px;
-  border-radius: 15px;
-  margin-bottom: 40px;
-  transition: 0.2s;
-}
-
-.TEXT:hover {
-  background-color: #6c9ee9;
-}
-
-/* Card Styles */
-.v-card {
-  border-radius: 12px; /* Rounded corners for the card */
-}
-
-.v-card:hover {
-  box-shadow: 0px 0px 10px 5px rgb(147, 147, 147);
-}
-
-/* Typography */
-h4 {
-  font-size: 1.25rem; /* Larger font size for headings */
-  color: #ffffff; /* Dark Purple */
-}
-
-/* Buttons */
-.v-btn {
-  border-radius: 20px; /* Rounded corners for buttons */
-  transition: 0.2s;
-}
-
-/* Button Color Classes */
-.btn-on {
-  background-color: #4a148c; /* Dark Purple */
-  color: #ffffff; /* White text */
-}
-
-.btn-on:hover {
-  box-shadow: 0px 0px 10px 5px #4a148c;
-}
-
-.btn-on1:hover {
-  box-shadow: 0px 0px 10px 5px rgb(255, 83, 83);
-}
-
-.btn-off {
-  background-color: #ffffff; /* Blue */
-  color: #000000; /* White text */
-}
-
-.btn-off:hover {
-    box-shadow: 0px 0px 10px 5px rgb(147, 147, 147);
-}
-
-.btn-off1:hover {
-  box-shadow: 0px 0px 10px 5px rgb(147, 147, 147);
-}
-
-.btn-on1 {
-  background-color: red;
-  color: #ffffff;
-}
-
-/* Progress Circular */
-.v-progress-circular {
-  color: #4a148c; /* Dark Purple progress circle */
-  border-radius: 100px;
-  transition: 0.2s;
-  
-}
-
-/* Progress Circular */
-.v-progress-circular:hover {
-  box-shadow: 0px 0px 10px 5px rgb(147, 147, 147);
-}
-
-/* Flexbox for Buttons and Circular Progress */
-.d-flex {
-  display: flex;
-}
-
-.align-center {
-  align-items: center;
-}
-
-.justify-center {
-  justify-content: center;
-}
-
-.mx-1 {
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-}
-
-/* Margins */
-.mb-3, .mb-4, .mb-5 {
-  margin-bottom: 1rem;
-}
-
-.v-card {
-  height: 420px;
-} 
-
-/* Responsive Design */
-@media (max-width: 600px) {
-  .v-card {
-    padding: 2rem; /* Adjust padding for smaller screens */
-  }
-}
-</style>
-
-
-
-
